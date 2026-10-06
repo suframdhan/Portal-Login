@@ -3,59 +3,57 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Portal AKSARA - MAN 1 Kota Cirebon</title>
-    
-    <!-- Memuat Tailwind CSS -->
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-
-    <script>
-        tailwind.config = {
-            theme: {
-                extend: {
-                    fontFamily: { sans: ['Poppins', 'sans-serif'] },
-                    colors: {
-                        brand: {
-                            50: '#f0fdfa', 100: '#ccfbf1', 500: '#14b8a6', 
-                            600: '#0d9488', 700: '#0f766e', 800: '#115e59', 900: '#134e4a',
-                        }
-                    }
-                }
-            }
-        }
-    </script>
-
+    <title>AKSARA-APLIKASI KELAS DAN SISTEM ADMINISTRASI REKAM AKADEMIK</title>
     <style>
-        .fade-in-up { opacity: 0; animation: fadeInUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
-        @keyframes fadeInUp {
-            0% { opacity: 0; transform: translateY(20px); }
-            100% { opacity: 1; transform: translateY(0); }
-        }
-        .delay-100 { animation-delay: 100ms; }
-        .delay-200 { animation-delay: 200ms; }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body, html { width: 100%; height: 100%; overflow: hidden; background-color: #F8FAFC; font-family: 'Montserrat', sans-serif; }
         
-        .shine-effect { position: relative; overflow: hidden; }
-        .shine-effect::before {
-            content: ''; position: absolute; top: 0; left: -100%; width: 50%; height: 100%;
-            background: linear-gradient(to right, rgba(255,255,255,0) 0%, rgba(255,255,255,0.4) 50%, rgba(255,255,255,0) 100%);
-            transform: skewX(-25deg); transition: left 0.75s cubic-bezier(0.19, 1, 0.22, 1); z-index: 20; pointer-events: none;
+        /* Layar pemuatan awal yang elegan */
+        #loading-screen {
+            position: fixed;
+            inset: 0;
+            background: #ffffff;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            z-index: 999;
+            transition: opacity 0.4s ease;
         }
-        .portal-card:hover .shine-effect::before { left: 125%; }
-        .portal-card { transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1); }
-        .portal-card:hover { transform: translateY(-8px); box-shadow: 0 20px 40px -12px rgba(13, 148, 136, 0.25); }
+        .spinner {
+            width: 48px;
+            height: 48px;
+            border: 4px solid #E2E8F0;
+            border-top: 4px solid #00A39D;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+            margin-bottom: 16px;
+        }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        
+        /* Bingkai aplikasi utama yang memenuhi layar */
+        iframe {
+            width: 100%;
+            height: 100%;
+            border: none;
+            display: block;
+        }
     </style>
 </head>
-<body class="bg-slate-50 min-h-screen font-sans flex flex-col selection:bg-brand-500 selection:text-white">
+<body>
 
-    <!-- ================= HALAMAN LOGIN ================= -->
-    <!-- Dihapus class 'hidden' di sini agar tidak blank putih -->
-    <section id="login-section" class="flex-grow flex items-center justify-center p-4 min-h-screen">
-        <div class="bg-white p-8 md:p-12 rounded-3xl shadow-2xl max-w-md w-full border border-slate-100 relative overflow-hidden">
-            <!-- Ornamen hiasan -->
-            <div class="absolute -top-16 -right-16 w-32 h-32 bg-brand-100 rounded-full blur-2xl z-0"></div>
-            
-            <div class="relative z-10 text-center mb-8">
-                <img src="
+    <!-- Animasi loading saat pertama kali dibuka -->
+    <div id="loading-screen">
+        <div class="spinner"></div>
+        <h3 style="color: #1E293B; font-weight: 800; font-size: 14px; text-transform: uppercase; letter-spacing: 0.05em;">WELCOME TO AKSARA</h3>
+        <p style="color: #64748B; font-size: 11px; margin-top: 4px;">Aplikasi Kelas dan Sistem Administrasi Rekam Akademik</p>
+    </div>
+
+    <!-- Memuat seluruh sistem aplikasi Google Apps Script secara transparan -->
+    <iframe id="app-frame" src="https://script.google.com/macros/s/AKfycbxkZXwJ5UKxORpOOdXrdka1BaGPL3MirDmm0OdvmoS49hDaxDgg9_N9JscEu8_15hUD/exec" 
+            onload="document.getElementById('loading-screen').style.opacity='0'; setTimeout(()=>document.getElementById('loading-screen').style.display='none', 400);"
+            allow="fullscreen; camera; microphone; clipboard-read; clipboard-write">
+    </iframe>
+
+</body>
+</html>
