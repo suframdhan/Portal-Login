@@ -1,0 +1,24 @@
+{
+  "name": "Portal AKSARA - MAN 1 Kota Cirebon",
+  "short_name": "AKSARA",
+  "description": "Aplikasi Kelas dan Sistem Administrasi Rekam Akademik",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "background_color": "#F1F5F9",
+  "theme_color": "#005A2B",
+  "orientation": "portrait",
+  "icons": [
+    {
+      "src": "https://i.ibb.co.com/mCSMP2TP/LOGO-AKSARA.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "https://i.ibb.co.com/mCSMP2TP/LOGO-AKSARA.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}
