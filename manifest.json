@@ -4,8 +4,8 @@
   "description": "Aplikasi Kelas dan Sistem Administrasi Rekam Akademik",
   "start_url": "./index.html",
   "display": "standalone",
-  "background_color": "#F1F5F9",
-  "theme_color": "#005A2B",
+  "background_color": "#F8FAFC",
+  "theme_color": "#00A39D",
   "orientation": "portrait",
   "icons": [
     {
