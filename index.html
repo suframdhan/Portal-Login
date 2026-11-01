@@ -39,12 +39,11 @@
         }
 
         #loading-screen video {
-            width: 100%;
-            height: 100%;
-            /* object-fit: cover membuat video memenuhi layar. 
-               Ganti menjadi 'contain' jika logo terpotong di layar HP */
-            object-fit: cover; 
-        }
+    width: 80%; /* Membuat ukuran responsif di HP */
+    max-width: 500px; /* Membatasi ukuran maksimal agar tidak terlalu besar di PC */
+    height: auto;
+    object-fit: contain; /* Memastikan seluruh bagian video terlihat tanpa terpotong */
+}
         
         /* Bingkai aplikasi utama yang memenuhi layar */
         iframe {
