@@ -1,4 +1,4 @@
-const CACHE_NAME = 'aksara-pwa-v0.3';
+const CACHE_NAME = 'aksara-pwa-v0.5';
 const urlsToCache = [
   './',
   './index.html',
