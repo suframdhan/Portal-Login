@@ -2,49 +2,285 @@
 <html lang="id">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
     <title>AKSARA - Aplikasi Kelas dan Sistem Administrasi Rekam Akademik</title>
     
-    <!-- Google Fonts & FontAwesome -->
-    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts: Bobot terkurasi (400, 500, 600) sesuai hierarki tipografi -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600&display=swap" rel="stylesheet">
 
     <!-- Konfigurasi PWA -->
     <link rel="manifest" href="./manifest.json">
-    <meta name="theme-color" content="#ffffff">
+    <meta name="theme-color" content="#EEF2F6">
     <link rel="apple-touch-icon" href="https://i.ibb.co.com/mCSMP2TP/LOGO-AKSARA.png">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="default">
     
     <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        body, html { 
-            width: 100%; 
-            height: 100%; 
-            overflow: hidden; 
-            background-color: #F8FAFC; 
-            font-family: 'Montserrat', sans-serif; 
+        :root {
+            --bg-canvas: #EEF2F6;
+            --glass-surface: rgba(255, 255, 255, 0.72);
+            --glass-inner: rgba(255, 255, 255, 0.88);
+            --glass-border: rgba(255, 255, 255, 0.9);
+            --hairline-dark: rgba(15, 23, 42, 0.07);
+            --text-primary: #0F172A;
+            --text-secondary: #475569;
+            --text-muted: #64748B;
+            --accent: #0F766E;
+            --accent-soft: rgba(15, 118, 110, 0.12);
+            --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
         }
-        
-        /* Layar pemuatan Full Video */
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body, html {
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            background-color: var(--bg-canvas);
+            font-family: 'Montserrat', -apple-system, BlinkMacSystemFont, sans-serif;
+            color: var(--text-primary);
+            -webkit-font-smoothing: antialiased;
+        }
+
+        /* Layar pemuatan Glassmorphism */
         #loading-screen {
             position: fixed;
             inset: 0;
-            background-color: #ffffff;
             z-index: 999;
-            transition: opacity 0.5s ease, visibility 0.5s ease;
             display: flex;
             align-items: center;
             justify-content: center;
+            padding: 24px;
+            background-color: var(--bg-canvas);
+            background-image:
+                radial-gradient(at 15% 15%, rgba(148, 163, 184, 0.22) 0px, transparent 52%),
+                radial-gradient(at 85% 85%, rgba(15, 118, 110, 0.10) 0px, transparent 52%),
+                radial-gradient(rgba(15, 23, 42, 0.045) 1px, transparent 1px);
+            background-size: 100% 100%, 100% 100%, 20px 20px;
+            transition: opacity 0.45s var(--ease-out), transform 0.45s var(--ease-out), visibility 0.45s var(--ease-out);
         }
 
-        #loading-screen video {
-    width: 80%; /* Membuat ukuran responsif di HP */
-    max-width: 500px; /* Membatasi ukuran maksimal agar tidak terlalu besar di PC */
-    height: auto;
-    object-fit: contain; /* Memastikan seluruh bagian video terlihat tanpa terpotong */
-}
-        
+        #loading-screen.is-hidden {
+            opacity: 0;
+            transform: scale(1.015);
+            visibility: hidden;
+            pointer-events: none;
+        }
+
+        /* Kontainer Utama Frosted Glass (Grid 4px, Outer Radius 24px) */
+        .glass-shell {
+            width: 100%;
+            max-width: 440px;
+            padding: 24px;
+            border-radius: 24px;
+            background: var(--glass-surface);
+            backdrop-filter: blur(24px) saturate(160%);
+            -webkit-backdrop-filter: blur(24px) saturate(160%);
+            border: 1px solid var(--glass-border);
+            box-shadow:
+                0 24px 48px -12px rgba(15, 23, 42, 0.08),
+                0 0 0 1px var(--hairline-dark);
+            animation: shellEnter 0.5s var(--ease-out) both;
+        }
+
+        @keyframes shellEnter {
+            from {
+                opacity: 0;
+                transform: translateY(8px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Baris Identitas Aplikasi */
+        .brand-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+
+        .brand-mark {
+            width: 44px;
+            height: 44px;
+            flex-shrink: 0;
+            border-radius: 12px;
+            background: var(--glass-inner);
+            border: 1px solid var(--hairline-dark);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 6px;
+        }
+
+        .brand-mark img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+        }
+
+        .brand-meta {
+            min-width: 0;
+            flex: 1;
+        }
+
+        .brand-title {
+            font-size: 16px;
+            font-weight: 600;
+            line-height: 1.25;
+            color: var(--text-primary);
+            letter-spacing: -0.01em;
+        }
+
+        .brand-subtitle {
+            margin-top: 2px;
+            font-size: 12px;
+            font-weight: 400;
+            line-height: 1.4;
+            color: var(--text-secondary);
+        }
+
+        /* Panggung Video (Nested Radius: 24px - 8px = 16px) */
+        .media-stage {
+            width: 100%;
+            border-radius: 16px;
+            background: var(--glass-inner);
+            border: 1px solid var(--hairline-dark);
+            padding: 16px;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+        }
+
+        .media-stage video {
+            width: 100%;
+            max-width: 340px;
+            max-height: 240px;
+            height: auto;
+            border-radius: 10px;
+            object-fit: contain;
+            display: block;
+        }
+
+        /* Footer Status & Progres */
+        .status-footer {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .status-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+        }
+
+        .status-indicator {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            min-width: 0;
+        }
+
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background-color: var(--accent);
+            box-shadow: 0 0 0 3px var(--accent-soft);
+            flex-shrink: 0;
+        }
+
+        .status-label {
+            font-size: 12px;
+            font-weight: 500;
+            color: var(--text-secondary);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .status-percent {
+            font-size: 12px;
+            font-weight: 500;
+            color: var(--text-muted);
+            font-variant-numeric: tabular-nums;
+            flex-shrink: 0;
+        }
+
+        .progress-track {
+            width: 100%;
+            height: 4px;
+            border-radius: 4px;
+            background: rgba(15, 23, 42, 0.06);
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            width: 18%;
+            height: 100%;
+            border-radius: 4px;
+            background-color: var(--accent);
+            transition: width 0.35s var(--ease-out);
+        }
+
+        /* Opsi Muat Ulang Saat Koneksi Lambat */
+        .retry-bar {
+            display: none;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+            margin-top: 4px;
+            padding-top: 12px;
+            border-top: 1px solid var(--hairline-dark);
+        }
+
+        .retry-bar.is-visible {
+            display: flex;
+        }
+
+        .retry-hint {
+            font-size: 12px;
+            color: var(--text-muted);
+        }
+
+        .retry-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 6px 12px;
+            border-radius: 8px;
+            border: 1px solid rgba(15, 23, 42, 0.12);
+            background: rgba(255, 255, 255, 0.85);
+            color: var(--text-primary);
+            font-family: inherit;
+            font-size: 12px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: background-color 0.2s var(--ease-out), border-color 0.2s var(--ease-out);
+        }
+
+        .retry-btn:hover {
+            background: #ffffff;
+            border-color: rgba(15, 23, 42, 0.22);
+        }
+
+        .retry-btn:focus-visible {
+            outline: 2px solid var(--accent);
+            outline-offset: 2px;
+        }
+
         /* Bingkai aplikasi utama yang memenuhi layar */
         iframe {
             width: 100%;
@@ -52,25 +288,130 @@
             border: none;
             display: block;
         }
+
+        @media (max-width: 480px) {
+            #loading-screen {
+                padding: 16px;
+            }
+            .glass-shell {
+                padding: 20px;
+                border-radius: 20px;
+            }
+            .media-stage {
+                padding: 12px;
+                border-radius: 14px;
+            }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            .glass-shell {
+                animation: none;
+            }
+            #loading-screen,
+            .progress-fill,
+            .retry-btn {
+                transition: none;
+            }
+        }
     </style>
 </head>
 <body>
 
-    <!-- Animasi loading full video -->
-    <div id="loading-screen">
-        <video autoplay loop muted playsinline>
-            <source src="https://raw.githubusercontent.com/suframdhan/Portal-Login/refs/heads/main/AKSARA.mp4" type="video/mp4">
-        </video>
+    <!-- Layar pemuatan Glassmorphism -->
+    <div id="loading-screen" role="status" aria-live="polite">
+        <div class="glass-shell">
+            <div class="brand-header">
+                <div class="brand-mark">
+                    <img src="https://i.ibb.co.com/mCSMP2TP/LOGO-AKSARA.png" alt="Logo AKSARA" onerror="this.style.display='none'">
+                </div>
+                <div class="brand-meta">
+                    <div class="brand-title">AKSARA</div>
+                    <div class="brand-subtitle">Aplikasi Kelas dan Sistem Administrasi Rekam Akademik</div>
+                </div>
+            </div>
+
+            <div class="media-stage">
+                <video autoplay loop muted playsinline>
+                    <source src="https://raw.githubusercontent.com/suframdhan/Portal-Login/refs/heads/main/AKSARA.mp4" type="video/mp4">
+                </video>
+            </div>
+
+            <div class="status-footer">
+                <div class="status-row">
+                    <div class="status-indicator">
+                        <span class="status-dot" aria-hidden="true"></span>
+                        <span class="status-label" id="status-text">Memuat ruang kerja akademik</span>
+                    </div>
+                    <span class="status-percent" id="status-percent">18%</span>
+                </div>
+                <div class="progress-track">
+                    <div class="progress-fill" id="progress-fill"></div>
+                </div>
+
+                <div class="retry-bar" id="retry-bar">
+                    <span class="retry-hint">Koneksi memerlukan waktu lebih lama</span>
+                    <button type="button" class="retry-btn" onclick="window.location.reload()">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                            <path d="M21 12a9 9 0 1 1-2.64-6.36"></path>
+                            <polyline points="21 3 21 9 15 9"></polyline>
+                        </svg>
+                        Muat ulang
+                    </button>
+                </div>
+            </div>
+        </div>
     </div>
 
     <!-- Memuat seluruh sistem aplikasi Google Apps Script secara transparan -->
-    <iframe id="app-frame" src="https://script.google.com/macros/s/AKfycbyeEVlfeOAIT4I0rIOuYWjZrmPanD4StA8C77hw3svK6S92Npk7froaTNf2sXhrxjwi/exec" 
-            onload="const screen = document.getElementById('loading-screen'); screen.style.opacity='0'; setTimeout(()=>screen.style.visibility='hidden', 500);"
+    <iframe id="app-frame"
+            src="https://script.google.com/macros/s/AKfycbyeEVlfeOAIT4I0rIOuYWjZrmPanD4StA8C77hw3svK6S92Npk7froaTNf2sXhrxjwi/exec"
+            onload="completeAppLoad()"
             allow="fullscreen; camera; microphone; clipboard-read; clipboard-write">
     </iframe>
 
-    <!-- Script Registrasi Service Worker PWA -->
+    <!-- Pengendali Progres & Registrasi Service Worker PWA -->
     <script>
+        (function () {
+            let currentProgress = 18;
+            let isLoaded = false;
+
+            const fillEl = document.getElementById('progress-fill');
+            const percentEl = document.getElementById('status-percent');
+            const textEl = document.getElementById('status-text');
+            const retryBarEl = document.getElementById('retry-bar');
+            const screenEl = document.getElementById('loading-screen');
+
+            const progressTimer = setInterval(() => {
+                if (isLoaded || currentProgress >= 88) return;
+                const step = currentProgress < 55 ? 9 : 4;
+                currentProgress = Math.min(88, currentProgress + step);
+                fillEl.style.width = currentProgress + '%';
+                percentEl.textContent = currentProgress + '%';
+            }, 450);
+
+            const slowNetworkTimer = setTimeout(() => {
+                if (!isLoaded) {
+                    textEl.textContent = 'Menghubungkan ke server akademik';
+                    retryBarEl.classList.add('is-visible');
+                }
+            }, 10000);
+
+            window.completeAppLoad = function () {
+                if (isLoaded) return;
+                isLoaded = true;
+                clearInterval(progressTimer);
+                clearTimeout(slowNetworkTimer);
+
+                fillEl.style.width = '100%';
+                percentEl.textContent = '100%';
+                textEl.textContent = 'Sistem siap';
+
+                setTimeout(() => {
+                    screenEl.classList.add('is-hidden');
+                }, 260);
+            };
+        })();
+
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', () => {
                 navigator.serviceWorker.register('./sw.js')
