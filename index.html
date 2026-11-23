@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
     <title>AKSARA - Aplikasi Kelas dan Sistem Administrasi Rekam Akademik</title>
-    
+     
     <!-- Google Fonts: Bobot terkurasi (400, 500, 600) sesuai hierarki tipografi -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -362,24 +362,82 @@
         </div>
     </div>
 
-    <!-- Memuat seluruh sistem aplikasi Google Apps Script secara transparan -->
+    <!-- Memuat seluruh sistem aplikasi Google Apps Script secara transparan dengan izin Geolocation -->
     <iframe id="app-frame"
-            src="https://script.google.com/macros/s/AKfycbxNP6dl1ORkH-ieFNJYDSDzbIP_jy_ElGADlKuhC8F6ZzZ97fxN6duoJAwNRYTDIvca/exec"
+            src="https://script.google.com/macros/s/AKfycbweq6_I9MYckrSaI3GNPzA2YWXjvAPIWPgN1MfxSMHv4LMMLu_U8J_OgywBvwV5bVeO/exec"
             onload="completeAppLoad()"
-            allow="fullscreen; camera; microphone; clipboard-read; clipboard-write">
+            allow="geolocation *; fullscreen; camera; microphone; clipboard-read; clipboard-write">
     </iframe>
 
-    <!-- Pengendali Progres & Registrasi Service Worker PWA -->
+    <!-- Pengendali Progres, Jembatan Izin Lokasi GPS & Registrasi Service Worker PWA -->
     <script>
         (function () {
             let currentProgress = 18;
             let isLoaded = false;
+            let latestGeoPayload = null;
 
             const fillEl = document.getElementById('progress-fill');
             const percentEl = document.getElementById('status-percent');
             const textEl = document.getElementById('status-text');
             const retryBarEl = document.getElementById('retry-bar');
             const screenEl = document.getElementById('loading-screen');
+            const appFrameEl = document.getElementById('app-frame');
+
+            function sendGeoPayloadToIframe(payload) {
+                latestGeoPayload = payload;
+                if (appFrameEl && appFrameEl.contentWindow) {
+                    try {
+                        appFrameEl.contentWindow.postMessage(payload, '*');
+                    } catch (e) {}
+                }
+            }
+
+            // Memicu pop-up izin lokasi browser dari domain induk GitHub (yf.aksara.my.id)
+            function requestTopLevelGeolocation(isManualTrigger) {
+                if (!navigator.geolocation) {
+                    sendGeoPayloadToIframe({
+                        type: 'AKSARA_GEO_RESULT',
+                        ok: false,
+                        manual: !!isManualTrigger,
+                        reason: 'Browser tidak mendukung Geolocation.'
+                    });
+                    return;
+                }
+
+                navigator.geolocation.getCurrentPosition(
+                    function (pos) {
+                        sendGeoPayloadToIframe({
+                            type: 'AKSARA_GEO_RESULT',
+                            ok: true,
+                            manual: !!isManualTrigger,
+                            lat: pos.coords.latitude,
+                            lon: pos.coords.longitude
+                        });
+                    },
+                    function (err) {
+                        sendGeoPayloadToIframe({
+                            type: 'AKSARA_GEO_RESULT',
+                            ok: false,
+                            manual: !!isManualTrigger,
+                            code: err && err.code ? err.code : 1,
+                            reason: err && err.message ? err.message : 'Izin lokasi ditolak pengguna.'
+                        });
+                    },
+                    { enableHighAccuracy: false, timeout: 10000, maximumAge: 300000 }
+                );
+            }
+
+            // Dengarkan permintaan lokasi ulang dari dalam iframe Google Apps Script
+            window.addEventListener('message', function (event) {
+                const data = event && event.data;
+                if (!data || typeof data !== 'object') return;
+                if (data.type === 'AKSARA_REQUEST_GEO') {
+                    requestTopLevelGeolocation(!!data.manual);
+                }
+            });
+
+            // Langsung minta izin lokasi browser saat halaman GitHub dibuka
+            requestTopLevelGeolocation(false);
 
             const progressTimer = setInterval(() => {
                 if (isLoaded || currentProgress >= 88) return;
@@ -405,6 +463,11 @@
                 fillEl.style.width = '100%';
                 percentEl.textContent = '100%';
                 textEl.textContent = 'Sistem siap';
+
+                // Kirim ulang hasil koordinat jika pengguna sudah mengizinkan sebelum iframe selesai dimuat
+                if (latestGeoPayload) {
+                    setTimeout(() => sendGeoPayloadToIframe(latestGeoPayload), 400);
+                }
 
                 setTimeout(() => {
                     screenEl.classList.add('is-hidden');
