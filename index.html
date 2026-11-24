@@ -364,7 +364,7 @@
 
     <!-- Memuat seluruh sistem aplikasi Google Apps Script secara transparan dengan izin Geolocation -->
     <iframe id="app-frame"
-            src="https://script.google.com/macros/s/AKfycbweq6_I9MYckrSaI3GNPzA2YWXjvAPIWPgN1MfxSMHv4LMMLu_U8J_OgywBvwV5bVeO/exec"
+            src="https://script.google.com/macros/s/AKfycbxYE0HSGSaKxEwZI6qFCBd2YLuYCp96SkdfYm94unbiKRqaBC-tEfIvJs8NX5nMTRQ/exec"
             onload="completeAppLoad()"
             allow="geolocation *; fullscreen; camera; microphone; clipboard-read; clipboard-write">
     </iframe>
@@ -375,6 +375,7 @@
             let currentProgress = 18;
             let isLoaded = false;
             let latestGeoPayload = null;
+            let activeGeoRequester = null;
 
             const fillEl = document.getElementById('progress-fill');
             const percentEl = document.getElementById('status-percent');
@@ -385,6 +386,11 @@
 
             function sendGeoPayloadToIframe(payload) {
                 latestGeoPayload = payload;
+                if (activeGeoRequester) {
+                    try {
+                        activeGeoRequester.postMessage(payload, '*');
+                    } catch (e) {}
+                }
                 if (appFrameEl && appFrameEl.contentWindow) {
                     try {
                         appFrameEl.contentWindow.postMessage(payload, '*');
@@ -427,11 +433,18 @@
                 );
             }
 
-            // Dengarkan permintaan lokasi ulang dari dalam iframe Google Apps Script
+            // Dengarkan permintaan lokasi dari dalam nested iframe Google Apps Script
             window.addEventListener('message', function (event) {
                 const data = event && event.data;
                 if (!data || typeof data !== 'object') return;
                 if (data.type === 'AKSARA_REQUEST_GEO') {
+                    if (event.source) {
+                        activeGeoRequester = event.source;
+                    }
+                    if (latestGeoPayload && latestGeoPayload.ok && !data.manual) {
+                        sendGeoPayloadToIframe(latestGeoPayload);
+                        return;
+                    }
                     requestTopLevelGeolocation(!!data.manual);
                 }
             });
