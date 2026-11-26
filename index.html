@@ -364,9 +364,9 @@
 
     <!-- Memuat seluruh sistem aplikasi Google Apps Script secara transparan dengan izin penuh -->
     <iframe id="app-frame"
-            src="https://script.google.com/macros/s/AKfycby6x0W-_wG2LZDI1sSyl4Pwg7x6XIHDJq2QQMQ2P95BiIi9Cbu5P-hCyY9PeSFnJr1A/exec"
+            src="https://script.google.com/macros/s/AKfycbyBR7sHn4Bd1I-KjRkK9k69uusg82Dd8gySmzydQtCshDZJKFj8kP4wKciljpZiwUEf/exec"
             onload="completeAppLoad()"
-            allow="geolocation *; fullscreen; camera; microphone; clipboard-read; clipboard-write; modals; popups">
+            allow="geolocation *; fullscreen; camera; microphone; clipboard-read; clipboard-write; modals; popups; downloads">
     </iframe>
 
     <!-- Pengendali Progres, Jembatan Izin Lokasi GPS & Registrasi Service Worker PWA -->
@@ -487,6 +487,9 @@
                     const loaderVideo = screenEl.querySelector('video');
                     if (loaderVideo) {
                         loaderVideo.pause();
+                        loaderVideo.removeAttribute('src');
+                        loaderVideo.innerHTML = '';
+                        loaderVideo.load();
                     }
                 }, 260);
             };
