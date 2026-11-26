@@ -362,11 +362,11 @@
         </div>
     </div>
 
-    <!-- Memuat seluruh sistem aplikasi Google Apps Script secara transparan dengan izin Geolocation -->
+    <!-- Memuat seluruh sistem aplikasi Google Apps Script secara transparan dengan izin penuh -->
     <iframe id="app-frame"
-            src="https://script.google.com/macros/s/AKfycbxYE0HSGSaKxEwZI6qFCBd2YLuYCp96SkdfYm94unbiKRqaBC-tEfIvJs8NX5nMTRQ/exec"
+            src="https://script.google.com/macros/s/AKfycby6x0W-_wG2LZDI1sSyl4Pwg7x6XIHDJq2QQMQ2P95BiIi9Cbu5P-hCyY9PeSFnJr1A/exec"
             onload="completeAppLoad()"
-            allow="geolocation *; fullscreen; camera; microphone; clipboard-read; clipboard-write">
+            allow="geolocation *; fullscreen; camera; microphone; clipboard-read; clipboard-write; modals; popups">
     </iframe>
 
     <!-- Pengendali Progres, Jembatan Izin Lokasi GPS & Registrasi Service Worker PWA -->
@@ -484,6 +484,10 @@
 
                 setTimeout(() => {
                     screenEl.classList.add('is-hidden');
+                    const loaderVideo = screenEl.querySelector('video');
+                    if (loaderVideo) {
+                        loaderVideo.pause();
+                    }
                 }, 260);
             };
         })();
